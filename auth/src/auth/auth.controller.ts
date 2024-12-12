@@ -10,4 +10,13 @@ export class AuthController {
   register(@Body(ValidationPipe) userData: CreateUserDto) {
     return this.authService.register(userData);
   }
+
+  @Post('verify-email')
+  async verifyEmail(@Body('token') token: string) {
+    const decoded = await this.authService.verifyEmail(token);
+    return {
+      message: 'Email verification successful.',
+      data: decoded,
+    };
+  }
 }

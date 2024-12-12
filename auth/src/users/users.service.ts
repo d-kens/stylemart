@@ -1,9 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { hash } from 'bcrypt';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -12,26 +13,53 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  findUserByEmail = async (email: string): Promise<User | null> => {
-    const user = await this.usersRepository.findOne({
-      where: { email },
+  findOneById(userId: string): Promise<User | null> {
+    return this.usersRepository.findOne({
+      where: { id: userId },
     });
+  }
 
-    return user;
-  };
+  async findUserByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
 
   async create(userData: CreateUserDto): Promise<User> {
     const existingUser = await this.findUserByEmail(userData.email);
 
-    if (existingUser) throw new ConflictException('USer alrady exists');
+    if (existingUser) throw new ConflictException('User alrady exists');
 
-    const hashedPassword = await hash(userData.password, 10);
+    try {
+      const hashedPassword = await hash(userData.password, 10);
 
-    const newUser = this.usersRepository.create({
-      ...userData,
-      password: hashedPassword,
-    });
+      const newUser = this.usersRepository.create({
+        ...userData,
+        password: hashedPassword,
+      });
 
-    return this.usersRepository.save(newUser);
+      return this.usersRepository.save(newUser);
+    } catch (error) {
+      throw new InternalServerErrorException('Could not create user')
+    }
+  }
+
+  async update(userId: string, userData: UpdateUserDto): Promise<User> {
+    const existingUser = await this.findOneById(userId);
+  
+    if (!existingUser) throw new NotFoundException(`User with user ID ${userId} not found`);
+  
+    try {
+      const updatedUser = Object.assign(existingUser, userData);
+      return await this.usersRepository.save(updatedUser);
+    } catch (error) {
+      throw new InternalServerErrorException('Could not update user');
+    }
+  }
+  
+  async delete(id: string): Promise<void> {
+    const result = await this.usersRepository.delete({ id });
+  
+    if (result.affected === 0) {
+      throw new NotFoundException(`User with ID: ${id} not found`);
+    }
   }
 }
