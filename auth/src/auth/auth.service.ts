@@ -7,27 +7,29 @@ import { EmailVerificationNotification } from 'src/dtos/notification-payload';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private userService: UsersService,
-        private jwtService: JwtService,
-        private notificationService: NotificationService
-    ) {}
+  constructor(
+    private userService: UsersService,
+    private jwtService: JwtService,
+    private notificationService: NotificationService,
+  ) {}
 
+  async register(userData: CreateUserDto) {
+    const user = await this.userService.create(userData);
 
-    async register(userData: CreateUserDto) {
-        const user =  await this.userService.create(userData);
+    const token = this.jwtService.sign({ sub: user.id, email: user.email });
 
-        const token = this.jwtService.sign({ sub: user.id, email: user.email })
-        
-        const verificationLink = `http://your-app.com/verify-email?token=${token}`;  
+    const verificationLink = `http://your-app.com/verify-email?token=${token}`;
 
-        const emailVerificationData: EmailVerificationNotification = {
-            clientEmail: user.email,
-            verificationLink
-        }
+    const emailVerificationData: EmailVerificationNotification = {
+      clientEmail: user.email,
+      verificationLink,
+    };
 
-        await this.notificationService.sendVerificationEmail(emailVerificationData)
+    await this.notificationService.sendVerificationEmail(emailVerificationData);
 
-        return { message: 'Registration successful. Please check your email for verification.' };
-    }
+    return {
+      message:
+        'Registration successful. Please check your email for verification.',
+    };
+  }
 }

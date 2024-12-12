@@ -8,16 +8,18 @@ import { NotificationService } from 'src/events/notification/notification.servic
 
 @Module({
   imports: [
-      UsersModule, 
-      JwtModule.registerAsync({
-        useFactory: async (configService: ConfigService) => ({
-          secret: configService.get<string>('JWT_SECRET'),
-          signOptions: { expiresIn: `${configService.get<number>('JWT_EXPIRES_IN')}s` },
-        }),
-        inject: [ConfigService]
+    UsersModule,
+    JwtModule.registerAsync({
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: `${configService.get<number>('JWT_EXPIRES_IN')}s`,
+        },
       }),
+      inject: [ConfigService],
+    }),
   ],
   providers: [AuthService, NotificationService],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}

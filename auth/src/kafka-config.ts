@@ -1,4 +1,4 @@
-import { KafkaOptions, Transport } from "@nestjs/microservices";
+import { KafkaOptions, Transport } from '@nestjs/microservices';
 
 import * as dotenv from 'dotenv';
 
@@ -8,23 +8,23 @@ const brokers = process.env.BROKERS
   : ['localhost:9092'];
 
 export const microserviceConfig: KafkaOptions = {
-    transport: Transport.KAFKA,
-    options: {
-        client: {
-            clientId: 'auth',
-            brokers,
-            retry: {
-                retries: 10,
-            }
-        },
-        producer: {
-            allowAutoTopicCreation: true
-        },
-        consumer: {
-            groupId: 'auth-consumer-group',
-        },
-        subscribe: {
-            fromBeginning: true
-        }
-    }
-}
+  transport: Transport.KAFKA,
+  options: {
+    client: {
+      clientId: 'auth',
+      brokers,
+      retry: {
+        retries: 10,
+      },
+    },
+    producer: {
+      allowAutoTopicCreation: true,
+    },
+    consumer: {
+      groupId: 'auth-consumer-group',
+    },
+    subscribe: {
+      fromBeginning: true,
+    },
+  },
+};

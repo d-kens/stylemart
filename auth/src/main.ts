@@ -13,7 +13,7 @@ async function bootstrap() {
     methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
     allowedHeaders: ['content-type'],
     credentials: true,
-  })
+  });
 
   app.setGlobalPrefix('auth');
 

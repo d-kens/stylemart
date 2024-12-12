@@ -4,13 +4,10 @@ import { CreateUserDto } from 'src/dtos/create-user.dto';
 
 @Controller()
 export class AuthController {
-    constructor(
-        private authService: AuthService
-    ) {}
+  constructor(private authService: AuthService) {}
 
-    @Post('register')
-    register(@Body(ValidationPipe) userData: CreateUserDto) {
-        return this.authService.register(userData);
-    }
-
+  @Post('register')
+  register(@Body(ValidationPipe) userData: CreateUserDto) {
+    return this.authService.register(userData);
+  }
 }
