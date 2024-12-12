@@ -8,6 +8,7 @@ import { UsersService } from 'src/users/users.service';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { NotificationService } from 'src/events/notification/notification.service';
 import { EmailVerificationNotification } from 'src/dtos/notification-payload';
+import * as process from 'process';
 
 @Injectable()
 export class AuthService {
@@ -20,11 +21,17 @@ export class AuthService {
   async register(userData: CreateUserDto) {
     const user = await this.userService.create(userData);
 
-    const token = this.jwtService.sign({ sub: user.id, email: user.email });
+    const token = this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: `${process.env.JWT_EXPIRES_IN}s`,
+      },
+    );
 
     console.log('TOKEN: ', token);
 
-    const verificationLink = `http://your-app.com/verify-email?token=${token}`;
+    const verificationLink = `http://localhost:4200/auth/verify-email?token=${token}`;
 
     const emailVerificationData: EmailVerificationNotification = {
       clientEmail: user.email,
