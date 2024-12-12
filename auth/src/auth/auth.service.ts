@@ -2,14 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from 'src/mailer/mailer.service';
+import { NotificationService } from 'src/events/notification/notification.service';
+import { EmailVerificationNotification } from 'src/dtos/notification-payload';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UsersService,
-        private mailerService: MailerService,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private notificationService: NotificationService
     ) {}
 
 
@@ -18,9 +19,14 @@ export class AuthService {
 
         const token = this.jwtService.sign({ sub: user.id, email: user.email })
         
-        const verificationUrl = `http://your-app.com/verify-email?token=${token}`;  
+        const verificationLink = `http://your-app.com/verify-email?token=${token}`;  
 
-        await this.mailerService.sendVerificationEmail(user.email, verificationUrl)
+        const emailVerificationData: EmailVerificationNotification = {
+            clientEmail: user.email,
+            verificationLink
+        }
+
+        await this.notificationService.sendVerificationEmail(emailVerificationData)
 
         return { message: 'Registration successful. Please check your email for verification.' };
     }

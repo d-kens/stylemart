@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
-import { MailerModule } from 'src/mailer/mailer.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { NotificationService } from 'src/events/notification/notification.service';
 
 @Module({
   imports: [
@@ -16,9 +16,8 @@ import { ConfigService } from '@nestjs/config';
         }),
         inject: [ConfigService]
       }),
-      MailerModule
   ],
-  providers: [AuthService],
+  providers: [AuthService, NotificationService],
   controllers: [AuthController]
 })
 export class AuthModule {}
