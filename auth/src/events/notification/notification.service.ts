@@ -31,8 +31,6 @@ export class NotificationService implements OnModuleInit {
   }
 
   async sendNotification(pattern: string, data: any): Promise<Observable<any>> {
-    this.logger.log('Publishing Kafka event');
-    this.logger.log('Data: ', data);
     return this.kafkaClient.emit(pattern, data);
   }
 
