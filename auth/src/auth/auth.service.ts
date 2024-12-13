@@ -10,6 +10,8 @@ import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { NotificationService } from 'src/events/notification/notification.service';
 import { EmailVerificationNotification } from 'src/dtos/notification-payload';
 import * as process from 'process';
+import * as bcrypt from 'bcrypt';
+import { User } from 'src/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -57,39 +59,40 @@ export class AuthService {
 
       const user = await this.userService.findOneById(decoded.sub);
 
-      if (user.isEmailVerified) throw new BadRequestException('User has already been verified')
+      if (user.isEmailVerified)
+        throw new BadRequestException('User has already been verified');
 
-      await this.userService.update(decoded.sub, { isEmailVerified: true})
-
+      await this.userService.update(decoded.sub, { isEmailVerified: true });
 
       return {
-        message:
-          'Email verification successful.',
+        message: 'Email verification successful.',
       };
-
     } catch (error) {
-
       this.logger.error(error);
-  
+
       if (error instanceof TokenExpiredError) {
-
         throw new BadRequestException('Verification token has expired');
-
       } else if (error instanceof JsonWebTokenError) {
-
         throw new BadRequestException('Invalid verification token');
-
       } else if (error instanceof BadRequestException) {
-  
         throw new BadRequestException(error.message);
-
       } else {
-
         throw new InternalServerErrorException(
           'An error occurred while verifying the token',
         );
-
       }
     }
+  }
+
+  async validateUser(email: string, password: string): Promise<User | null> {
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) return null;
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) return null;
+
+    return user;
   }
 }
