@@ -4,12 +4,16 @@ import {
   Controller,
   Post,
   Request,
+  Res,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
+import { Response } from 'express';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from 'src/entities/user.entity';
 
 @Controller()
 export class AuthController {
@@ -35,7 +39,10 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login') 
-  async login(@Request() req) {
-    return req.user;
+  async login(
+    @CurrentUser() user: Partial<User>,
+    @Res({ passthrough: true }) response: Response
+  ) {
+    return await this.authService.login(user, response)
   }
 }

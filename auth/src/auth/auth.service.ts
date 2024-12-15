@@ -12,6 +12,8 @@ import { EmailVerificationNotification } from 'src/dtos/notification-payload';
 import * as process from 'process';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
+import { Response } from 'express';
+import { TokenPayload } from './interfaces/token-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -29,8 +31,8 @@ export class AuthService {
     const token = this.jwtService.sign(
       { sub: user.id, email: user.email },
       {
-        secret: process.env.JWT_SECRET,
-        expiresIn: `${process.env.JWT_EXPIRES_IN}s`,
+        secret: process.env.SECRET_KEY,
+        expiresIn: `${process.env.VERIFICATION_TOKEN_EXPIRATION_MS}ms`,
       },
     );
 
@@ -51,10 +53,53 @@ export class AuthService {
     };
   }
 
+  async login(user: Partial<User>, response: Response) {
+    try {
+      const accessTokenExpiryTime = new Date();
+      accessTokenExpiryTime.setTime(accessTokenExpiryTime.getTime() + parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS));
+
+      const refreshTokenExpiryTime = new Date();
+      refreshTokenExpiryTime.setTime(refreshTokenExpiryTime.getTime() + parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS));
+
+      const tokenPayload: TokenPayload = {
+        userId: user.id,
+        email: user.email,
+      };
+
+      const acessToken = this.jwtService.sign(tokenPayload, {
+        secret: process.env.SECRET_KEY,
+        expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS}ms`,
+      });
+
+      const refreshToken = this.jwtService.sign(tokenPayload, {
+        secret: process.env.SECRET_KEY,
+        expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS}ms`,
+      });
+
+      response.cookie('Access-Tokne', acessToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        expires: accessTokenExpiryTime,
+      });
+
+      response.cookie('Refresh-Token', refreshToken, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        expires: refreshTokenExpiryTime,
+      });
+
+      return { message: 'Authentication Sucessful' }
+
+    } catch (error) {
+      this.logger.error("USER AUTHENTICATION FAILED", error);
+      throw new InternalServerErrorException('User authentication failed');
+    }
+  }
+
   async verifyEmail(token: string) {
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
+        secret: process.env.VERIFICATION_EXPIRES_IN,
       });
 
       const user = await this.userService.findOneById(decoded.sub);
