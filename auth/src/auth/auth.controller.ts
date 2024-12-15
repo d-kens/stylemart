@@ -3,10 +3,13 @@ import {
   Body,
   Controller,
   Post,
+  Request,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -28,5 +31,11 @@ export class AuthController {
       message: 'Email verification successful.',
       data: decoded,
     };
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login') 
+  async login(@Request() req) {
+    return req.user;
   }
 }
