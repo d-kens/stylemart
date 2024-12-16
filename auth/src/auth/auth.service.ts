@@ -76,13 +76,13 @@ export class AuthService {
         expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS}ms`,
       });
 
-      response.cookie('Access-Tokne', acessToken, {
+      response.cookie('AccessToken', acessToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         expires: accessTokenExpiryTime,
       });
 
-      response.cookie('Refresh-Token', refreshToken, {
+      response.cookie('RefreshToken', refreshToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         expires: refreshTokenExpiryTime,

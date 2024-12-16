@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { microserviceConfig } from './kafka-config';
 import { Logger } from '@nestjs/common';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +19,11 @@ async function bootstrap() {
   app.setGlobalPrefix('auth');
 
   await app.startAllMicroservices();
+
+
+  app.use(cookieParser())
+
+
   await app.listen(process.env.PORT);
 }
 
