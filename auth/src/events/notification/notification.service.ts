@@ -45,7 +45,7 @@ export class NotificationService implements OnModuleInit {
     } catch (error) {
       this.logger.error(
         'Error sending verification email notification',
-        error.stack,
+        error,
       );
       throw error;
     }

@@ -7,9 +7,10 @@ import { NotificationService } from 'src/events/notification/notification.servic
 import { LocalStrategy } from './strategies/local-strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh.strategy';
+import { OtpModule } from 'src/otp/otp.module';
 
 @Module({
-  imports: [UsersModule, JwtModule],
+  imports: [UsersModule, JwtModule, OtpModule],
   providers: [
     AuthService,
     NotificationService,
