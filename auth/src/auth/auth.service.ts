@@ -56,10 +56,16 @@ export class AuthService {
   async login(user: Partial<User>, response: Response) {
     try {
       const accessTokenExpiryTime = new Date();
-      accessTokenExpiryTime.setTime(accessTokenExpiryTime.getTime() + parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS));
+      accessTokenExpiryTime.setTime(
+        accessTokenExpiryTime.getTime() +
+          parseInt(process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS),
+      );
 
       const refreshTokenExpiryTime = new Date();
-      refreshTokenExpiryTime.setTime(refreshTokenExpiryTime.getTime() + parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS));
+      refreshTokenExpiryTime.setTime(
+        refreshTokenExpiryTime.getTime() +
+          parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS),
+      );
 
       const tokenPayload: TokenPayload = {
         userId: user.id,
@@ -76,6 +82,10 @@ export class AuthService {
         expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS}ms`,
       });
 
+      await this.userService.update(user.id, {
+        refreshToken: await bcrypt.hash(refreshToken, 10),
+      });
+
       response.cookie('AccessToken', acessToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
@@ -88,10 +98,9 @@ export class AuthService {
         expires: refreshTokenExpiryTime,
       });
 
-      return { message: 'Authentication Sucessful' }
-
+      return { message: 'Authentication Sucessful' };
     } catch (error) {
-      this.logger.error("USER AUTHENTICATION FAILED", error);
+      this.logger.error('USER AUTHENTICATION FAILED', error);
       throw new InternalServerErrorException('User authentication failed');
     }
   }
@@ -99,7 +108,7 @@ export class AuthService {
   async verifyEmail(token: string) {
     try {
       const decoded = this.jwtService.verify(token, {
-        secret: process.env.VERIFICATION_EXPIRES_IN,
+        secret: process.env.SECRET_KEY,
       });
 
       const user = await this.userService.findOneById(decoded.sub);
@@ -137,6 +146,21 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) return null;
+
+    return user;
+  }
+
+  async verifyRefreshToken(refreshToken: string, userId: string) {
+    const user = await this.userService.findOneById(userId);
+
+    if (!user) return null;
+
+    const isRefreshTokenValid = await bcrypt.compare(
+      refreshToken,
+      user.refreshToken,
+    );
+
+    if (!isRefreshTokenValid) return null;
 
     return user;
   }

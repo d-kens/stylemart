@@ -20,9 +20,7 @@ async function bootstrap() {
 
   await app.startAllMicroservices();
 
-
-  app.use(cookieParser())
-
+  app.use(cookieParser());
 
   await app.listen(process.env.PORT);
 }

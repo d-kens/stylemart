@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Post,
-  Request,
   Res,
   UseGuards,
   ValidationPipe,
@@ -14,6 +13,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Response } from 'express';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from 'src/entities/user.entity';
+import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -38,11 +38,20 @@ export class AuthController {
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('login') 
+  @Post('login')
   async login(
     @CurrentUser() user: Partial<User>,
-    @Res({ passthrough: true }) response: Response
+    @Res({ passthrough: true }) response: Response,
   ) {
-    return await this.authService.login(user, response)
+    return await this.authService.login(user, response);
+  }
+
+  @Post('refresh-token')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refreshToken(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.login(user, response);
   }
 }

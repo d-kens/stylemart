@@ -35,6 +35,9 @@ export class User {
   @Column({ type: 'boolean', default: false })
   isEmailVerified: boolean;
 
+  @Column({ nullable: true })
+  refreshToken?: string;
+
   @Column({
     type: 'enum',
     enum: RoleEnum,

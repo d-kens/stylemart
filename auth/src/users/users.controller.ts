@@ -11,9 +11,8 @@ export class UsersController {
   @Get()
   async findAll(): Promise<UserReponseDto[]> {
     const users = await this.usersService.findAll();
-    return users.map(user => new UserReponseDto(user))
+    return users.map((user) => new UserReponseDto(user));
   }
-
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
