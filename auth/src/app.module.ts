@@ -4,6 +4,7 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { OtpModule } from './otp/otp.module';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { OtpModule } from './otp/otp.module';
     UsersModule,
     AuthModule,
     OtpModule,
+    TokenModule,
   ],
 })
 export class AppModule {}

@@ -40,7 +40,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
-    @CurrentUser() user: Partial<User>,
+    @CurrentUser() user: User,
     @Res({ passthrough: true }) response: Response,
   ) {
     return await this.authService.login(user, response);

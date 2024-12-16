@@ -36,8 +36,7 @@ export class AuthService {
       },
     );
 
-    console.log('TOKEN: ', token);
-
+    // Generate and save the email verification token
     const verificationLink = `${process.env.WEB_DOMAIN}?token=${token}`;
 
     const emailVerificationData: EmailVerificationNotification = {
@@ -55,7 +54,6 @@ export class AuthService {
 
   async login(user: Partial<User>, response: Response) {
     try {
-      
       const accessTokenExpiryTime = new Date();
       accessTokenExpiryTime.setTime(
         accessTokenExpiryTime.getTime() +
@@ -78,6 +76,7 @@ export class AuthService {
         expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS}ms`,
       });
 
+      // TODO: Generate and update the refresh token of a specific user
       const refreshToken = this.jwtService.sign(tokenPayload, {
         secret: process.env.SECRET_KEY,
         expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS}ms`,

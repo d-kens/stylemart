@@ -6,9 +6,9 @@ import { OTP } from 'src/entities/otp.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([OTP]),],
+  imports: [TypeOrmModule.forFeature([OTP])],
   providers: [OtpService, NotificationService],
   controllers: [OtpController],
-  exports: [OtpService]
+  exports: [OtpService],
 })
 export class OtpModule {}

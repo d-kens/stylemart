@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Token } from './token.entity';
 
 @Entity('tbl_users')
 export class User {
@@ -35,9 +37,6 @@ export class User {
   @Column({ type: 'boolean', default: false })
   isEmailVerified: boolean;
 
-  @Column({ nullable: true })
-  refreshToken?: string;
-
   @Column({
     type: 'enum',
     enum: RoleEnum,
@@ -45,9 +44,15 @@ export class User {
   })
   role: RoleEnum;
 
+  @Column({ nullable: true })
+  refreshToken: string;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt: Date;
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
+
+  @OneToMany(() => Token, (token) => token.user, { cascade: true })
+  tokens: Token[];
 }
