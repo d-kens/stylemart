@@ -29,6 +29,14 @@ export class TokenService {
     email: string,
     tokenType: TokenType,
   ): Promise<string> {
+    const existingToken = await this.tokenRepository.findOne({
+      where: { user: { id: userId }, tokenType },
+    });
+
+    if (existingToken) {
+      await this.tokenRepository.remove(existingToken);
+    }
+
     const token = this.jwtService.sign(
       { sub: userId, email },
       {

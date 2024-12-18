@@ -21,6 +21,7 @@ import { TokenPayload } from './interfaces/token-payload.interface';
 import { TokenService } from 'src/token/token.service';
 import { TokenType } from 'src/enums/toke-type.enum';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
+import { hash } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -138,7 +139,19 @@ export class AuthService {
   }
 
   async resetPassword(resetpwdData: ResetPasswordDto) {
-    console.log(resetpwdData);
+    const { token, newPassword } = resetpwdData;
+
+    const user = await this.tokenService.validateToken(token);
+
+    const password = await hash(newPassword, 10);
+
+    console.log('New password: ' + password);
+
+    await this.userService.update(user.id, { password });
+
+    return {
+      message: 'Password reset succesful',
+    };
   }
 
   async verifyEmail(token: string) {

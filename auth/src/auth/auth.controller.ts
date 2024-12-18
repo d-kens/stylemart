@@ -46,7 +46,7 @@ export class AuthController {
 
   @Post('reset-password')
   async resetPassword(@Body(ValidationPipe) resetPwdData: ResetPasswordDto) {
-    console.log('Reset Password: ' + resetPwdData);
+    return this.authService.resetPassword(resetPwdData);
   }
 
   @UseGuards(LocalAuthGuard)
