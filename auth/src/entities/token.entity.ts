@@ -21,12 +21,6 @@ export class Token {
   })
   tokenType: TokenType;
 
-  @Column({
-    type: 'timestamp',
-    nullable: false,
-  })
-  expiresAt: Date;
-
   @Column({ type: 'boolean', default: false })
   used: boolean;
 

@@ -8,9 +8,10 @@ import { LocalStrategy } from './strategies/local-strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh.strategy';
 import { OtpModule } from 'src/otp/otp.module';
+import { TokenModule } from 'src/token/token.module';
 
 @Module({
-  imports: [UsersModule, JwtModule, OtpModule],
+  imports: [UsersModule, JwtModule, OtpModule, TokenModule],
   providers: [
     AuthService,
     NotificationService,

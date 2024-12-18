@@ -10,7 +10,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [process.env.WEB_DOMAIN],
   });
-  
+
   app.setGlobalPrefix('notifications');
 
   await app.startAllMicroservices();

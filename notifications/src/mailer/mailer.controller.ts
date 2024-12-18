@@ -9,12 +9,15 @@ export class MailerController {
   private readonly logger = new Logger(MailerController.name);
 
   constructor(private readonly mailerService: MailerService) {}
-  
 
   @EventPattern(EventType.EMAIL_VERIFICATION_NOTIFICATION)
   async sendVerificationEmail(@Payload() data: EmailVerificationNotification) {
-    this.logger.log(`Received email verification notification for ${data.clientEmail}`);
-    await this.mailerService.sendVerificationEmail(data.clientEmail, data.verificationLink);
+    this.logger.log(
+      `Received email verification notification for ${data.clientEmail}`,
+    );
+    await this.mailerService.sendVerificationEmail(
+      data.clientEmail,
+      data.verificationLink,
+    );
   }
-
 }

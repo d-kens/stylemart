@@ -37,7 +37,6 @@ export class UsersController {
     return new UserReponseDto(result);
   }
 
-  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @Delete(':userId')
   async delete(@Param('userId') userId: string) {

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
-import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { NotificationService } from 'src/events/notification/notification.service';
 import { EmailVerificationNotification } from 'src/dtos/notification-payload';
 import * as process from 'process';
@@ -14,6 +14,8 @@ import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
 import { Response } from 'express';
 import { TokenPayload } from './interfaces/token-payload.interface';
+import { TokenService } from 'src/token/token.service';
+import { TokenType } from 'src/enums/toke-type.enum';
 
 @Injectable()
 export class AuthService {
@@ -23,21 +25,21 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private notificationService: NotificationService,
+    private tokenService: TokenService,
   ) {}
 
   async register(userData: CreateUserDto) {
     const user = await this.userService.create(userData);
 
-    const token = this.jwtService.sign(
-      { sub: user.id, email: user.email },
-      {
-        secret: process.env.SECRET_KEY,
-        expiresIn: `${process.env.VERIFICATION_TOKEN_EXPIRATION_MS}ms`,
-      },
+    const emailVerificationToken = await this.tokenService.createToken(
+      user.id,
+      user.email,
+      TokenType.EMAIL_VERIFICATION,
     );
 
-    // Generate and save the email verification token
-    const verificationLink = `${process.env.WEB_DOMAIN}?token=${token}`;
+    console.log('Email verification toke: ' + emailVerificationToken);
+
+    const verificationLink = `${process.env.WEB_DOMAIN}?token=${emailVerificationToken}`;
 
     const emailVerificationData: EmailVerificationNotification = {
       clientEmail: user.email,
@@ -106,36 +108,16 @@ export class AuthService {
   }
 
   async verifyEmail(token: string) {
-    try {
-      const decoded = this.jwtService.verify(token, {
-        secret: process.env.SECRET_KEY,
-      });
+    const user = await this.tokenService.validateToken(token);
 
-      const user = await this.userService.findOneById(decoded.sub);
+    if (user.isEmailVerified)
+      throw new BadRequestException('User has already been verified');
 
-      if (user.isEmailVerified)
-        throw new BadRequestException('User has already been verified');
+    await this.userService.update(user.id, { isEmailVerified: true });
 
-      await this.userService.update(decoded.sub, { isEmailVerified: true });
-
-      return {
-        message: 'Email verification successful.',
-      };
-    } catch (error) {
-      this.logger.error(error);
-
-      if (error instanceof TokenExpiredError) {
-        throw new BadRequestException('Verification token has expired');
-      } else if (error instanceof JsonWebTokenError) {
-        throw new BadRequestException('Invalid verification token');
-      } else if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
-      } else {
-        throw new InternalServerErrorException(
-          'An error occurred while verifying the token',
-        );
-      }
-    }
+    return {
+      message: 'Email verification successful.',
+    };
   }
 
   async validateUser(email: string, password: string): Promise<User | null> {
