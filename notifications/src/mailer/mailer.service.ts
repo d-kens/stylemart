@@ -19,12 +19,28 @@ export class MailerService {
     });
   }
 
+  async sendPasswordResetEmail(to: string, pwdResetUrl: string): Promise<void> {
+    const mailOptions: Mail.Options = {
+      from: {
+        name: this.configService.get<string>('APP_NAME'),
+        address: this.configService.get<string>('DEFAULT_EMAIL_FROM'),
+      },
+      to,
+      subject: 'Reset Password',
+      html: `
+                <h1>Reset Password</h1>
+                <p>We received a request to reset your password. Click the link below to proceed with password reset:</p>
+                <a href="${pwdResetUrl}">Reset Password</a>
+            `,
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
+
   async sendVerificationEmail(
     to: string,
     verificationUrl: string,
   ): Promise<void> {
-    console.log(to);
-    console.log(verificationUrl);
     const mailOptions: Mail.Options = {
       from: {
         name: this.configService.get<string>('APP_NAME'),

@@ -14,6 +14,8 @@ import { Response } from 'express';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from 'src/entities/user.entity';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
+import { ForgotPasswordDto } from 'src/dtos/forgot-pwd.dto';
+import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 
 @Controller()
 export class AuthController {
@@ -35,6 +37,16 @@ export class AuthController {
       message: 'Email verification successful.',
       data: decoded,
     };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body(ValidationPipe) forgotPwdData: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPwdData.email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body(ValidationPipe) resetPwdData: ResetPasswordDto) {
+    console.log('Reset Password: ' + resetPwdData);
   }
 
   @UseGuards(LocalAuthGuard)

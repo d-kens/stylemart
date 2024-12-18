@@ -3,12 +3,16 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotificationService } from 'src/events/notification/notification.service';
-import { EmailVerificationNotification } from 'src/dtos/notification-payload';
+import {
+  EmailVerificationNotification,
+  PasswordResetNotification,
+} from 'src/dtos/notification-payload';
 import * as process from 'process';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
@@ -16,6 +20,7 @@ import { Response } from 'express';
 import { TokenPayload } from './interfaces/token-payload.interface';
 import { TokenService } from 'src/token/token.service';
 import { TokenType } from 'src/enums/toke-type.enum';
+import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,13 +42,11 @@ export class AuthService {
       TokenType.EMAIL_VERIFICATION,
     );
 
-    console.log('Email verification toke: ' + emailVerificationToken);
-
-    const verificationLink = `${process.env.WEB_DOMAIN}?token=${emailVerificationToken}`;
+    console.log('Email verification token: ' + emailVerificationToken);
 
     const emailVerificationData: EmailVerificationNotification = {
       clientEmail: user.email,
-      verificationLink,
+      verificationLink: `${process.env.WEB_DOMAIN}/auth/verify-email?token=${emailVerificationToken}`,
     };
 
     await this.notificationService.sendVerificationEmail(emailVerificationData);
@@ -105,6 +108,37 @@ export class AuthService {
       this.logger.error('USER AUTHENTICATION FAILED', error);
       throw new InternalServerErrorException('User authentication failed');
     }
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordResetToken = await this.tokenService.createToken(
+      user.id,
+      user.email,
+      TokenType.PWD_RESET,
+    );
+
+    console.log('Password Reset token: ' + passwordResetToken);
+
+    const passwordResetData: PasswordResetNotification = {
+      clientEmail: user.email,
+      resetLink: `${process.env.WEB_DOMAIN}/auth/reset-password?token=${passwordResetToken}`,
+    };
+
+    await this.notificationService.sendPasswordReset(passwordResetData);
+
+    return {
+      message: 'Password reset link has been sent to your email.',
+    };
+  }
+
+  async resetPassword(resetpwdData: ResetPasswordDto) {
+    console.log(resetpwdData);
   }
 
   async verifyEmail(token: string) {
