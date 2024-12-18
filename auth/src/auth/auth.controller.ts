@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Post,
   Res,
   UseGuards,
@@ -17,6 +18,7 @@ import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { ForgotPasswordDto } from 'src/dtos/forgot-pwd.dto';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 import { ChangepasswordDto } from 'src/dtos/change-password.dto';
+import { UserReponseDto } from 'src/dtos/user-reponse.dto';
 
 @Controller()
 export class AuthController {
@@ -25,6 +27,31 @@ export class AuthController {
   @Post('register')
   register(@Body(ValidationPipe) userData: CreateUserDto) {
     return this.authService.register(userData);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return await this.authService.login(user, response);
+  }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Get('user')
+  async getCurrentUser(@CurrentUser() user: User): Promise<UserReponseDto> {
+    console.log('User: ' + JSON.stringify(user));
+    return new UserReponseDto(user);
+  }
+
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh-token')
+  async refreshToken(
+    @CurrentUser() user: User,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    await this.authService.login(user, response);
   }
 
   @Post('verify-email')
@@ -59,21 +86,13 @@ export class AuthController {
     return await this.authService.changePassword(changePwdData, user);
   }
 
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  async login(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    return await this.authService.login(user, response);
-  }
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('AccessToken');
+    response.clearCookie('RefreshToken');
 
-  @UseGuards(JwtRefreshAuthGuard)
-  @Post('refresh-token')
-  async refreshToken(
-    @CurrentUser() user: User,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    await this.authService.login(user, response);
+    return {
+      message: 'Logged out successfully.',
+    };
   }
 }
