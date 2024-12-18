@@ -22,6 +22,7 @@ import { TokenService } from 'src/token/token.service';
 import { TokenType } from 'src/enums/toke-type.enum';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 import { hash } from 'bcrypt';
+import { ChangepasswordDto } from 'src/dtos/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -140,7 +141,6 @@ export class AuthService {
 
   async resetPassword(resetpwdData: ResetPasswordDto) {
     const { token, newPassword } = resetpwdData;
-
     const user = await this.tokenService.validateToken(token);
 
     const password = await hash(newPassword, 10);
@@ -151,6 +151,24 @@ export class AuthService {
 
     return {
       message: 'Password reset succesful',
+    };
+  }
+
+  async changePassword(changePwdData: ChangepasswordDto, user: User) {
+    const { oldPassword, newPassword } = changePwdData;
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+
+    if (!isPasswordValid) {
+      throw new BadRequestException('Incorrect old password');
+    }
+
+    const password = await hash(newPassword, 10);
+
+    await this.userService.update(user.id, { password });
+
+    return {
+      message: 'Password changed successfully',
     };
   }
 

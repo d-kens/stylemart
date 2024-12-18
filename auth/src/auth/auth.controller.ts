@@ -16,6 +16,7 @@ import { User } from 'src/entities/user.entity';
 import { JwtRefreshAuthGuard } from './guards/jwt-refresh-auth.guard';
 import { ForgotPasswordDto } from 'src/dtos/forgot-pwd.dto';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
+import { ChangepasswordDto } from 'src/dtos/change-password.dto';
 
 @Controller()
 export class AuthController {
@@ -49,6 +50,15 @@ export class AuthController {
     return this.authService.resetPassword(resetPwdData);
   }
 
+  @UseGuards(JwtRefreshAuthGuard)
+  @Post('change-password')
+  async changePassword(
+    @Body(ValidationPipe) changePwdData: ChangepasswordDto,
+    @CurrentUser() user: User,
+  ) {
+    return await this.authService.changePassword(changePwdData, user);
+  }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(
@@ -58,8 +68,8 @@ export class AuthController {
     return await this.authService.login(user, response);
   }
 
-  @Post('refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
+  @Post('refresh-token')
   async refreshToken(
     @CurrentUser() user: User,
     @Res({ passthrough: true }) response: Response,
