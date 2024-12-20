@@ -19,22 +19,17 @@ module.exports = {
     },
     extend: {},
   },
-  daisui: {
+  daisyui: {
     themes: [
       {
-        'fantasy': {
+        fantasy: {
           primary: '#0000ff',
           'primary-content': 'white',
           secondary: '#F6F6F6',
-          neutral: 'E8E8E8',
-        }
-      }
+          neutral: '#E8E8E8',
+        },
+      },
     ],
-    base: true,
-    styled: true,
-    utils: true,
-    prefix: '',
-    logs: true,
   },
   plugins: [
     require('@tailwindcss/typography'),
