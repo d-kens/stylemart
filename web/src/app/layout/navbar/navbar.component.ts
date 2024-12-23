@@ -11,6 +11,24 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 })
 export class NavbarComponent {
 
+  isMenuOpen = false;
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  logout(): void {
+    this.closeDropDownMenu();
+    console.log('Logout')
+  }
+
+  closeDropDownMenu(): void {
+    let bodyElement = document.activeElement as HTMLElement;
+
+    if(bodyElement) {
+      bodyElement.blur();
+    }
+  }
   
 
 }

@@ -1,52 +1,68 @@
-<div class="navbar">
-
+<div class="navbar bg-base-100">
     <div class="navbar-start">
-        <div class="dropdown">
-            <a class="btn btn-ghost text-xl">
-                <div class="border-1 bg-secondary logo rounded-xl p-2" routerLink="/">Stylemart</div>
-            </a>
-        </div>
+      <div class="dropdown">
+        <a class="btn btn-ghost text-xl">
+          <div class="border-1 bg-secondary logo p-2 rounded-xl" routerLink="/">S</div>
+        </a>
+      </div>
     </div>
-
+  
     <div class="navbar-center flex">
-        <div class="menu menu-sm sm:menu-lg menu-horizontal px-1">
-            <li><a href="/">Home</a></li>
-            <li>
-                <details>
-                    <summary>Products</summary>
-                    <ul class="z-30">
-                        <li><a href="#">All</a></li>
-                    </ul>
-                </details>
-            </li>
-            <li>
-                <details>
-                    <summary>Admin</summary>
-                    <ul class="z-30">
-                        <li><a href="#">All</a></li>
-                    </ul>
-                </details>
-            </li>
-        </div>
-    </div>
-
-    <div class="navbar-end pe-4 flex align-items-center">
-        <div class="dropdown dropdown-end pe-4">
-            <div tabindex="0" role="button">
-                <fa-icon [icon]="['fas', 'user']" class="menu-icon"></fa-icon>
-            </div>
-            <ul class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow">
-                <li>
-                    <button class="link">Login</button>
-                </li>
+      <!-- These are being hidden on small screen -->
+      <div class="menu menu-sm sm:menu-lg menu-horizontal px-1 hidden lg:flex">
+        <li><a href="/">Home</a></li>
+        <li>
+          <details>
+            <summary>Products</summary>
+            <ul class="z-30">
+              <li><a href="#">All</a></li>
             </ul>
-        </div>
-
-        <div class="dropdown dropdown-end me-2" routerLink="/cart">
-            <div tabindex="0" role="button">
-                <fa-icon [icon]="['fas', 'cart-shopping']" class="menu-icon"></fa-icon>
-            </div>
-        </div>
+          </details>
+        </li>
+        <li>
+          <details>
+            <summary>Admin</summary>
+            <ul class="z-30">
+              <li><a href="#">All</a></li>
+            </ul>
+          </details>
+        </li>
+      </div>
     </div>
+  
+    <div class="navbar-end pe-4 flex items-center">
+      <!-- Dropdown for user menu -->
+      <div class="dropdown dropdown-end pe-4">
+        <div tabindex="0" role="button">
+          <fa-icon [icon]="['fas', 'user']" class="menu-icon"></fa-icon>
+        </div>
+        <ul class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow">
+          <li>
+            <button class="link" (click)="closeDropDownMenu()">Register</button>
+          </li>
+          <li>
+            <button class="link" (click)="closeDropDownMenu()">Login</button>
+          </li>
+          <li>
+            <button class="link" (click)="closeDropDownMenu()">My Orders</button>
+          </li>
+          <li>
+            <button class="link" (click)="logout()">Logout</button>
+          </li>
+        </ul>
+      </div>
+  
+      <!-- Cart icon -->
+      <div class="dropdown dropdown-end me-2" routerLink="/cart">
+        <div tabindex="0" role="button">
+          <div class="indicator">
+            <span class="indicator-item badge badge-primary">{{ 0 }}</span>
+            <fa-icon [icon]="['fas', 'cart-shopping']" class="menu-icon"></fa-icon>
+          </div>
+        </div>
+      </div>
 
+    </div>
 </div>
+
+  
