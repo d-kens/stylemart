@@ -1,13 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { microserviceConfig } from './kafka-config';
 import { Logger } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.connectMicroservice(microserviceConfig);
 
   app.enableCors({
     origin: [process.env.WEB_DOMAIN, 'http://localhost:4200'], // Allowed origins

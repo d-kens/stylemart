@@ -8,8 +8,6 @@ import {
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { NotificationService } from 'src/events/notification/notification.service';
-import { PasswordResetNotification } from 'src/dtos/notification-payload';
 import * as process from 'process';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
@@ -20,6 +18,7 @@ import { TokenType } from 'src/enums/toke-type.enum';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 import { hash } from 'bcrypt';
 import { ChangepasswordDto } from 'src/dtos/change-password.dto';
+import { MailerService } from 'src/mailer/mailer.service';
 
 @Injectable()
 export class AuthService {
@@ -28,8 +27,8 @@ export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
-    private notificationService: NotificationService,
     private tokenService: TokenService,
+    private mailerService: MailerService,
   ) {}
 
   async register(userData: CreateUserDto): Promise<User> {
@@ -97,14 +96,9 @@ export class AuthService {
       TokenType.PWD_RESET,
     );
 
-    console.log('Password Reset token: ' + passwordResetToken);
+    const pwdResetLink = `${process.env.WEB_DOMAIN}/auth/reset-password?token=${passwordResetToken}`;
 
-    const passwordResetData: PasswordResetNotification = {
-      clientEmail: user.email,
-      resetLink: `${process.env.WEB_DOMAIN}/auth/reset-password?token=${passwordResetToken}`,
-    };
-
-    await this.notificationService.sendPasswordReset(passwordResetData);
+    await this.mailerService.sendPasswordResetEmail(user.email, pwdResetLink);
 
     return {
       message: 'Password reset link has been sent to your email.',

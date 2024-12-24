@@ -7,10 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as otplib from 'otplib';
 import { OTP } from 'src/entities/otp.entity';
-import { NotificationService } from 'src/events/notification/notification.service';
 import { Repository } from 'typeorm';
 import { authenticator } from 'otplib';
-import { OtpNotification } from 'src/dtos/notification-payload';
+import { MailerService } from 'src/mailer/mailer.service';
 
 otplib.authenticator.options = {
   digits: 6,
@@ -21,7 +20,7 @@ export class OtpService {
   constructor(
     @InjectRepository(OTP)
     private otpRepository: Repository<OTP>,
-    private notificationService: NotificationService,
+    private mailerService: MailerService,
   ) {}
 
   private async generateAndSaveOTP(userId: string) {
@@ -57,13 +56,15 @@ export class OtpService {
   async requestOTP(userId: string, email: string): Promise<void> {
     const result = await this.generateAndSaveOTP(userId);
 
-    const otpData: OtpNotification = {
+    const otpData = {
       clientEmail: email,
       otp: result.otp,
       otpLifeSpan: 5,
     };
 
-    await this.notificationService.sendOtpNotification(otpData);
+    console.log(otpData);
+
+    // TODO: Implement sending notifiction here
   }
 
   async verifyOTP(userId: string, otp: string): Promise<{ message: string }> {
