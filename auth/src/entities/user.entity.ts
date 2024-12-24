@@ -34,7 +34,7 @@ export class User {
   })
   phoneNumber: string;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: true })
   isEmailVerified: boolean;
 
   @Column({

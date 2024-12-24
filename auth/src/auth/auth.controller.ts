@@ -25,8 +25,11 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  register(@Body(ValidationPipe) userData: CreateUserDto) {
-    return this.authService.register(userData);
+  async register(
+    @Body(ValidationPipe) userData: CreateUserDto,
+  ): Promise<UserReponseDto> {
+    const result = await this.authService.register(userData);
+    return new UserReponseDto(result);
   }
 
   @UseGuards(LocalAuthGuard)

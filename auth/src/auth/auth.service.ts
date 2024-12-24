@@ -9,10 +9,7 @@ import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { NotificationService } from 'src/events/notification/notification.service';
-import {
-  EmailVerificationNotification,
-  PasswordResetNotification,
-} from 'src/dtos/notification-payload';
+import { PasswordResetNotification } from 'src/dtos/notification-payload';
 import * as process from 'process';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/entities/user.entity';
@@ -35,28 +32,8 @@ export class AuthService {
     private tokenService: TokenService,
   ) {}
 
-  async register(userData: CreateUserDto) {
-    const user = await this.userService.create(userData);
-
-    const emailVerificationToken = await this.tokenService.createToken(
-      user.id,
-      user.email,
-      TokenType.EMAIL_VERIFICATION,
-    );
-
-    console.log('Email verification token: ' + emailVerificationToken);
-
-    const emailVerificationData: EmailVerificationNotification = {
-      clientEmail: user.email,
-      verificationLink: `${process.env.WEB_DOMAIN}/auth/verify-email?token=${emailVerificationToken}`,
-    };
-
-    await this.notificationService.sendVerificationEmail(emailVerificationData);
-
-    return {
-      message:
-        'Registration successful. Please check your email for verification.',
-    };
+  async register(userData: CreateUserDto): Promise<User> {
+    return await this.userService.create(userData);
   }
 
   async login(user: Partial<User>, response: Response) {
@@ -83,7 +60,6 @@ export class AuthService {
         expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS}ms`,
       });
 
-      // TODO: Generate and update the refresh token of a specific user
       const refreshToken = this.jwtService.sign(tokenPayload, {
         secret: process.env.SECRET_KEY,
         expiresIn: `${process.env.JWT_REFRESH_TOKEN_EXPIRATION_MS}ms`,

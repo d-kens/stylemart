@@ -1,6 +1,10 @@
 <div class="border-2 border-gray-300 rounded-lg shadow-lg w-full sm:w-9/12 md:w-8/12 max-w-lg mx-auto p-8 bg-white">
 
-    <form class="w-full space-y-4">
+    <form 
+        class="w-full space-y-4"
+        [formGroup]="registrationForm"
+        (ngSubmit)="registerUser()"
+    >
         <h1 class="text-3xl font-bold text-center text-gray-800">Create Account</h1>
 
         <!-- Firstname -->
@@ -9,9 +13,11 @@
             <input 
                 type="text" 
                 placeholder="Enter your firstname"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
-                formControlName="firstname"
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none 
+                {{ firstName?.invalid && (firstName?.dirty || firstName?.touched) ? 'border-red-500' : 'border-gray-300' }}"
+                formControlName="firstName"
             />
+            <span *ngIf="firstName?.invalid && (firstName?.dirty || firstName?.touched)" class="mt-1 text-sm text-red-500">Firstname is required</span>
         </label>
 
         <!-- Lastname -->
@@ -20,9 +26,11 @@
             <input 
                 type="text" 
                 placeholder="Enter your lastname"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
-                formControlName="lastname"
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ lastName?.invalid && (lastName?.dirty || lastName?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
+                formControlName="lastName"
             />
+            <span *ngIf="lastName?.invalid && (lastName?.dirty || lastName?.touched)" class="mt-1 text-sm text-red-500">Lastname  is required</span>
         </label>
 
         <!-- Email -->
@@ -31,9 +39,11 @@
             <input 
                 type="email" 
                 placeholder="Enter your email"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ email?.invalid && (email?.dirty || email?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
                 formControlName="email"
             />
+            <span *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-500">Email  is required</span>
         </label>
 
         <!-- Phone Number -->
@@ -42,9 +52,11 @@
             <input 
                 type="text" 
                 placeholder="Enter your phone number"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
-                formControlName="phoneNumber"
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ phone?.invalid && (phone?.dirty || phone?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
+                formControlName="phone"
             />
+            <span *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="mt-1 text-sm text-red-500">Phone Number  is required</span>
         </label>
 
         <!-- Password -->
@@ -53,9 +65,11 @@
             <input 
                 type="password" 
                 placeholder="Enter your password"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ password?.invalid && (password?.dirty || password?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
                 formControlName="password"
             />
+            <span *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="mt-1 text-sm text-red-500">Password  is required</span>
         </label>
 
         <!-- Confirm Password -->
@@ -64,13 +78,20 @@
             <input 
                 type="password" 
                 placeholder="Confirm your password"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ confirmPassword?.invalid && (confirmPassword?.dirty || confirmPassword?.touched) ? 'border-red-500' : 'border-gray-300' }}"  
                 formControlName="confirmPassword"
             />
+            <span *ngIf="registrationForm.hasError('passwordMismatch')" class="text-xs text-red-500">Password mismatch</span>
+            <span *ngIf="confirmPassword?.invalid && (confirmPassword?.dirty || confirmPassword?.touched)" class="mt-1 text-sm text-red-500">Confirm password  is required</span>
         </label>
 
         <!-- Submit Button -->
-        <button type="submit" class="mt-6 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition">
+        <button 
+            [disabled]="loading"
+            type="submit" 
+            class="mt-6 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition"
+        >
             Register
         </button>
     </form>

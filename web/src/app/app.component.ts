@@ -4,6 +4,7 @@ import { fontAwesomeIcons } from './shared/font-awesome-icons';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from './layout/footer/footer.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent implements OnInit {
 
   private faIconLibrary = inject(FaIconLibrary);
   private faConfig = inject(FaConfig);
+
 
   ngOnInit(): void {
     this.initFontAwesome()

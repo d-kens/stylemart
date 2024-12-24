@@ -11,7 +11,7 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^19.0.0",
+    "@angular/animations": "^19.0.5",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
     "@angular/core": "^19.0.0",
@@ -28,6 +28,8 @@
     "@ng-web-apis/common": "^4.11.1",
     "@ng-web-apis/universal": "^4.11.1",
     "express": "^4.18.2",
+    "libphonenumber-js": "^1.11.17",
+    "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
