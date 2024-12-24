@@ -45,7 +45,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('user')
   async getCurrentUser(@CurrentUser() user: User): Promise<UserReponseDto> {
-    console.log('User: ' + JSON.stringify(user));
     return new UserReponseDto(user);
   }
 
@@ -92,7 +91,6 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('AccessToken');
     response.clearCookie('RefreshToken');
 
     return {

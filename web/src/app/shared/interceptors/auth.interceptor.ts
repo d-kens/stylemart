@@ -12,7 +12,6 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService, private router: Router) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    
     const excludedUrls = ['/auth/register', '/auth/login'];
 
     const isExcludedUrl = excludedUrls.some(url => request.url.includes(url));
@@ -21,17 +20,31 @@ export class AuthInterceptor implements HttpInterceptor {
       console.log("REQUEST NOT INTERCEPTED: " + request.url);
       return next.handle(request);
     }
-    
+
+    // Get the access token from localStorage
+    const accessToken = localStorage.getItem('authToken');
+
+    // Clone the request and add the Authorization header
     const clonedRequest = request.clone({
-      withCredentials: true, 
+      headers: request.headers.set('Authorization', `Bearer ${accessToken}`),
+      withCredentials: true,
     });
 
     return next.handle(clonedRequest).pipe(
       catchError((error) => {
         if (error.status === 401) {
           return this.authService.refreshToken().pipe(
-            switchMap(() => {
-              return next.handle(clonedRequest);
+            switchMap((response) => {
+              console.log("REFRESH TOKEN RESPONSE", response)
+              // Assuming the response contains the new access token
+              const newAccessToken = response.accessToken;
+              this.authService.storeAccessToken(newAccessToken); // Store the new access token
+
+              // Retry the original request with the new access token
+              const retryRequest = request.clone({
+                headers: request.headers.set('Authorization', `Bearer ${newAccessToken}`),
+              });
+              return next.handle(retryRequest);
             }),
             catchError((refreshError) => {
               this.authService.logout();

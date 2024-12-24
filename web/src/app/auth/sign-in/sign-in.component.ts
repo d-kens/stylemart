@@ -50,7 +50,9 @@ export class SignInComponent {
     }
 
     this.authService.login(loginReqObject).subscribe({
-      next: () => {
+      next: (response) => {
+        this.authService.storeAccessToken(response.accessToken);
+        this.authService.updateAuthenticationStatus(true);
         this.loading = false;
         this.loginForm.reset();
         this.toastr.success('Login successful');
@@ -58,10 +60,12 @@ export class SignInComponent {
       },
       error: (error) => {
         this.loading = false;
+        console.log("THIS IS THE ERROR", error)
         if(error.status === 401) {
           this.toastr.error('Unauthorized. Invalid email or password');
         } else {
           this.toastr.error('Internal Server Error. Failed to login');
+          console.log(error)
         }
       }
  

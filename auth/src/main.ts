@@ -10,10 +10,10 @@ async function bootstrap() {
   app.connectMicroservice(microserviceConfig);
 
   app.enableCors({
-    origin: [process.env.WEB_DOMAIN, 'http://localhost:4200'],
-    methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'],
-    allowedHeaders: ['content-type'],
-    credentials: true,
+    origin: [process.env.WEB_DOMAIN, 'http://localhost:4200'], // Allowed origins
+    methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'], // Allowed methods
+    allowedHeaders: ['content-type', 'authorization'], // Allow content-type and authorization headers
+    credentials: true, // Allow credentials
   });
 
   app.setGlobalPrefix('auth');

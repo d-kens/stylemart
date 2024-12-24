@@ -55,7 +55,7 @@ export class AuthService {
         email: user.email,
       };
 
-      const acessToken = this.jwtService.sign(tokenPayload, {
+      const accessToken = this.jwtService.sign(tokenPayload, {
         secret: process.env.SECRET_KEY,
         expiresIn: `${process.env.JWT_ACCESS_TOKEN_EXPIRATION_MS}ms`,
       });
@@ -69,19 +69,15 @@ export class AuthService {
         refreshToken: await bcrypt.hash(refreshToken, 10),
       });
 
-      response.cookie('AccessToken', acessToken, {
-        httpOnly: true,
-        secure: false,
-        expires: accessTokenExpiryTime,
-      });
-
       response.cookie('RefreshToken', refreshToken, {
         httpOnly: true,
         secure: false,
         expires: refreshTokenExpiryTime,
       });
 
-      return { message: 'Authentication Sucessful' };
+      return {
+        accessToken: accessToken,
+      };
     } catch (error) {
       this.logger.error('USER AUTHENTICATION FAILED', error);
       throw new InternalServerErrorException('User authentication failed');

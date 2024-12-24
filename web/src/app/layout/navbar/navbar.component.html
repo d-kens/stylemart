@@ -34,21 +34,42 @@
       <!-- Dropdown for user menu -->
       <div class="dropdown dropdown-end pe-4">
         <div tabindex="0" role="button">
-          <fa-icon [icon]="['fas', 'user']" class="menu-icon"></fa-icon>
+
+          @if ((isAuthenticated$ | async)) {
+            <div class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-500 text-white transition-transform transform hover:scale-105">
+              {{ userInitials }}
+            </div>
+          } @else {
+            <fa-icon [icon]="['fas', 'user']" class="menu-icon"></fa-icon>
+          }
+        
         </div>
-        <ul class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow">
-          <li>
-            <button class="link" routerLink="auth/sign-up" (click)="closeDropDownMenu()">Register</button>
-          </li>
-          <li>
-            <button class="link" (click)="closeDropDownMenu()">Login</button>
-          </li>
+
+        <!-- Displayed if user is logged out -->
+        <ul
+          class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow"
+          *ngIf="(isAuthenticated$ | async)"
+        >
           <li>
             <button class="link" (click)="closeDropDownMenu()">My Orders</button>
           </li>
           <li>
             <button class="link" (click)="logout()">Logout</button>
           </li>
+        </ul>
+
+        <!-- Displayed if user is logged in -->
+        <ul 
+          class="dropdown-content menu menu-lg bg-base-100 rounded-box z-10 w-52 p-2 shadow"
+          *ngIf="!(isAuthenticated$ | async)"
+        >
+          <li>
+            <button class="link" routerLink="auth/sign-up" (click)="closeDropDownMenu()">Register</button>
+          </li>
+          <li>
+            <button class="link" routerLink="auth/sign-in" (click)="closeDropDownMenu()">Login</button>
+          </li>
+
         </ul>
       </div>
   
