@@ -1,1 +1,49 @@
-<p>sign-in works!</p>
+<div class="border-2 border-gray-300 rounded-lg shadow-lg w-full sm:w-9/12 md:w-8/12 max-w-lg mx-auto p-8 bg-white">
+
+    <form class="w-full space-y-4">
+        <h1 class="text-3xl font-bold text-center text-gray-800">Login</h1>
+
+        <!-- Email -->
+        <label class="form-control w-full">
+            <span class="block text-sm font-medium text-gray-700">Email</span>
+            <input 
+                type="email" 
+                placeholder="Enter your email"
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                formControlName="email"
+            />
+        </label>
+
+        <!-- Password -->
+        <label class="form-control w-full space-y-2">
+            <span class="block text-sm font-medium text-gray-700">Password</span>
+            <input 
+                type="password" 
+                placeholder="Enter your password"
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                formControlName="password"
+            />
+        </label>
+
+        <!-- Forgot Password -->
+        <div class="text-right">
+            <a routerLink="/auth/forgot-password" class="text-sm text-primary font-semibold hover:underline">
+                Forgot Password?
+            </a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="mt-6 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition">
+            Login
+        </button>
+    </form>
+
+    <!-- Register Link -->
+    <div class="mt-4 text-center">
+        <p class="text-sm text-gray-600">
+            Don't have an account? 
+            <a routerLink="/auth/sign-up" class="text-primary font-semibold hover:underline">Register</a>
+        </p>
+    </div>
+
+</div>

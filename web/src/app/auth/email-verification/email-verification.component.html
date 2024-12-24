@@ -1,1 +1,37 @@
-<p>email-verification works!</p>
+<div class="border-2 border-gray-300 rounded-lg shadow-lg w-full sm:w-9/12 md:w-8/12 max-w-lg mx-auto p-8 bg-white">
+
+    <div class="w-full space-y-4">
+        <h1 class="text-3xl font-bold text-center text-gray-800">Email Verification</h1>
+       
+
+        <!-- Spinner while verifying -->
+        <div *ngIf="isVerifying" class="flex justify-center">
+            <p class="text-sm text-gray-600 text-center">
+                Verifying your email. Please wait...
+            </p>
+        </div>
+
+        <!-- Success Message -->
+        <div *ngIf="verificationSuccess" class="text-center">
+            <p class="text-sm text-green-600 font-medium">
+                Your email has been successfully verified! 🎉
+            </p>
+            <a routerLink="/auth/sign-in" class="mt-4 inline-block text-primary font-semibold hover:underline">
+                Go to Login
+            </a>
+        </div>
+
+        <!-- Failure Message -->
+        <div class="text-center">
+            <p class="text-sm font-medium">
+                Din't receive email verification token, Request a new one.
+            </p>
+            <button 
+                (click)="generateNewToken()" 
+                class="mt-4 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition">
+                Generate New Token
+            </button>
+        </div>
+    </div>
+
+</div>
