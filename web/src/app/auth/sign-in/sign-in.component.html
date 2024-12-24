@@ -1,6 +1,10 @@
 <div class="border-2 border-gray-300 rounded-lg shadow-lg w-full sm:w-9/12 md:w-8/12 max-w-lg mx-auto p-8 bg-white">
 
-    <form class="w-full space-y-4">
+    <form 
+        class="w-full space-y-4"
+        [formGroup]="loginForm"
+        (ngSubmit)="loginUser()"
+    >
         <h1 class="text-3xl font-bold text-center text-gray-800">Login</h1>
 
         <!-- Email -->
@@ -9,9 +13,11 @@
             <input 
                 type="email" 
                 placeholder="Enter your email"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ email?.invalid && (email?.dirty || email?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
                 formControlName="email"
             />
+            <span *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="mt-1 text-sm text-red-500">Email  is required</span>
         </label>
 
         <!-- Password -->
@@ -20,9 +26,11 @@
             <input 
                 type="password" 
                 placeholder="Enter your password"
-                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none" 
+                class="mt-1 input input-bordered w-full rounded-md border-gray-300 focus:outline-none
+                {{ password?.invalid && (password?.dirty || password?.touched) ? 'border-red-500' : 'border-gray-300' }}" 
                 formControlName="password"
             />
+            <span *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="mt-1 text-sm text-red-500">Password  is required</span>
         </label>
 
         <!-- Forgot Password -->
@@ -33,7 +41,11 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="mt-6 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition">
+        <button 
+            [disabled]="loading"
+            type="submit" 
+            class="mt-6 w-full py-3 text-white bg-primary hover:bg-primary-dark rounded-md shadow-lg transition"
+        >
             Login
         </button>
     </form>

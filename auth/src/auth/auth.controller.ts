@@ -19,6 +19,7 @@ import { ForgotPasswordDto } from 'src/dtos/forgot-pwd.dto';
 import { ResetPasswordDto } from 'src/dtos/reset-password.dto';
 import { ChangepasswordDto } from 'src/dtos/change-password.dto';
 import { UserReponseDto } from 'src/dtos/user-reponse.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller()
 export class AuthController {
@@ -41,7 +42,7 @@ export class AuthController {
     return await this.authService.login(user, response);
   }
 
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('user')
   async getCurrentUser(@CurrentUser() user: User): Promise<UserReponseDto> {
     console.log('User: ' + JSON.stringify(user));

@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PasswordMatchValidator } from '../../shared/validators/password-match';
 import { CommonModule } from '@angular/common';
-import { NewUser } from '../data-access/models/user.model';
+import { RegReqObject } from '../data-access/models/auth.model';
 import { AuthService } from '../data-access/services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -66,7 +66,7 @@ export class SignUpComponent {
 
     this.loading = true;
 
-    const userData: NewUser = {
+    const registrationReqObject: RegReqObject = {
       firstName: this.registrationForm.value.firstName,
       lastName: this.registrationForm.value.lastName,
       email: this.registrationForm.value.email,
@@ -74,7 +74,7 @@ export class SignUpComponent {
       password: this.registrationForm.value.password,
     }
 
-    this.authService.registerUser(userData).subscribe({
+    this.authService.registerUser(registrationReqObject).subscribe({
       next: () => {
         this.loading = false;
         this.registrationForm.reset();
@@ -82,6 +82,7 @@ export class SignUpComponent {
         this.router.navigate(['auth/sign-in']);
       },
       error: (error) => {
+        this.loading = false;
         if (error.status === 409) {
           this.toastr.error('Email already exists');
         } else {

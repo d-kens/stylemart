@@ -70,14 +70,14 @@ export class AuthService {
       });
 
       response.cookie('AccessToken', acessToken, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        secure: false,
         expires: accessTokenExpiryTime,
       });
 
       response.cookie('RefreshToken', refreshToken, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        secure: false,
         expires: refreshTokenExpiryTime,
       });
 
